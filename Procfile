@@ -1,0 +1,1 @@
+bike-reminder: python main.py
