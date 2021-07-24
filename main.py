@@ -3,6 +3,9 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 from time import sleep
 import smtplib
+import pytz
+
+tz = pytz.timezone('Europe/Vilnius')
 import keyring
 
 #keyring.set_password("not.even.denis", "not.even.denis@gmail.com", "XXXXX")
@@ -29,7 +32,7 @@ def regular_message():
         subject += 'AVILABLE!!!'
     else:
         subject += 'Not in Stock.'
-    now = datetime.now()
+    now = datetime.now(tz)
     text = str(now.strftime("%d/%m/%Y %H:%M:%S<br>"))
     for k, v in avail_dict.items():
         line = str(k + ' - ' + v + '<br>')
@@ -80,10 +83,6 @@ def get_info():
     if is_avail:
         s, t = regular_message()
         send_message(s, t)
-
-
-
-
 
 # Main logic
 
