@@ -38,7 +38,8 @@ def regular_message():
 
 def send_message(subject, text):
     username = 'not.even.denis@gmail.com'
-    password = keyring.get_password('not.even.denis', username)
+    #password = keyring.get_password('not.even.denis', username)
+    password = 'mybot2021'
 
     recipient = 'denisafonin.spb@gmail.com'
 
