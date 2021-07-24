@@ -96,6 +96,8 @@ while True:
 
     if page.status_code != 200:
         error_message = 'Something went wrong: page code ' + str(page.status_code)
+        send_message('Bike Bot Error', error_message)
+        break
 
     try:
         get_info()
