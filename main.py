@@ -112,6 +112,6 @@ while True:
         send_message('Bike Bot Error', error_message)
         break
 
-    sleep(600)
+    sleep(60)
 
 
