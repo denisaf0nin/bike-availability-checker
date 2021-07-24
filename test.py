@@ -1,2 +1,0 @@
-VERIFY_TOKEN = os.environ['VERIFY_TOKEN']
-PAGE_ACCESS_TOKEN = os.environ['PAGE_ACCESS_TOKEN']
