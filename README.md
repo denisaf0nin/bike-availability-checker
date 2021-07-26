@@ -1,18 +1,19 @@
 # Bike Stock Availability Checker
 
 I want to get a bike, but apparently there is [a global supply shortage](https://www.cyclist.co.uk/in-depth/9229/wheres-my-bike-the-inside-story-on-the-industry-stock-crisis) due to Covid.
-The bike I want is out of stock and local Decathlon website does not allow to subscribe to availablity updates. In this project I am creating an automated availability checker with Python.
+[The bike that I want](https://www.decathlon.lt/lt/unlinked/312397-66419-gravel-dviratis-120-su-diskiniai-stabdziais.html#/demodelsize-200m/demodelcolor-8575940?queryID=ecec0e2851f6f79ab57e376ac4c6c656&objectID=2962861) is out of stock and local Decathlon website does not allow to subscribe to availablity updates. In this project I am creating an automated availability checker with Python.
 
 What it should do:
 1. Go to website every 15 minutes and check if any frame size is available
 2. If it is, send me an e-mail
 3. If not, send emails at certain hours of the day (just so I know the script is still running)
 
-It's also important to run it from the cloud, so I'll be using Heroku for that (free, simple). 
-
-Getting data:
+It's also important to run it from the cloud, so I'll be using Heroku for that. 
 
 The piece of HTML code that contains relevant information looks like this:
+
+![Screenshot 2021-07-26 151313](https://user-images.githubusercontent.com/59995500/126987355-a27567bc-9de1-4c77-86ef-a31ba8a8f5cc.jpg)
+
 
     <select
           class="form-control form-control-select js-select-size js-select2"
@@ -60,8 +61,7 @@ I am using requests to connect to the web page and BeautifulSoup to parse HTML c
 
         return is_avail, avail_dict
       
-  This function returns two objects - ```avail_dict``` - which is a dictionary with key-value pairs ```{Size: Availability}```, and a boolean ```is_avail```, indicating if any size is available.
-  If an exception is raised, ```send_message``` function is triggered. This function takes ```subject``` and ```text``` inputs and sends me an e-mail:
+This function returns two objects - ```avail_dict``` - which is a dictionary with key-value pairs ```{Size: Availability}```, and a boolean ```is_avail```, indicating if any size is available. If an exception is raised, ```send_message``` function is triggered. This function takes ```subject``` and ```text``` inputs and sends me an e-mail:
   
     def send_message(subject, text):
       USERNAME = os.environ['USERNAME']
@@ -137,6 +137,8 @@ Finally, the two functions ```regular_check()``` and ```scheduled_report``` are 
 ```Procfile``` instructs Heroku to run ```scheduler.py``` script, that in turn uses ```regular_check()``` and ```scheduled_report()``` functions from ```main.py```.
 
 And here is an example of an e-mail being sent:
+
+![Screenshot 2021-07-26 151335](https://user-images.githubusercontent.com/59995500/126987265-f5da96eb-64af-4b69-a8a2-3b4ebfb95364.jpg)
 
 
 
