@@ -61,7 +61,7 @@ I am using requests to connect to the web page and BeautifulSoup to parse HTML c
 
         return is_avail, avail_dict
       
-This function returns two objects - ```avail_dict``` - which is a dictionary with key-value pairs ```{Size: Availability}```, and a boolean ```is_avail```, indicating if any size is available. If an exception is raised, ```send_message``` function is triggered. This function takes ```subject``` and ```text``` inputs and sends me an e-mail:
+This function returns two objects - ```avail_dict``` - which is a dictionary with key-value pairs ```{Size: Availability}```, and a boolean ```is_avail```, indicating if any size is available. If an exception is raised, ```send_message()``` function is triggered. This function takes ```subject``` and ```text``` inputs and sends me an e-mail:
   
     def send_message(subject, text):
       USERNAME = os.environ['USERNAME']
