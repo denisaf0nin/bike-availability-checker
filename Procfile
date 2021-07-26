@@ -1,1 +1,1 @@
-bike-reminder: python main.py
+bike-reminder: python scheduler.py

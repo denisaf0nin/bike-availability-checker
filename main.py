@@ -1,35 +1,20 @@
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
-from time import sleep
-import smtplib
 import pytz
+import smtplib
+import os
 
 tz = pytz.timezone('Europe/Vilnius')
-import keyring
-
-#keyring.set_password("not.even.denis", "not.even.denis@gmail.com", "XXXXX")
 
 link = "https://www.decathlon.lt/lt/unlinked/312397-66419-gravel-dviratis-120-su-diskiniai-stabdziais.html#/demodelsize-200m/demodelcolor-8575940?queryID=ecec0e2851f6f79ab57e376ac4c6c656&objectID=2962861"
-# link = "https://www.decathlon.lt/lt/triatlonas-dviraciai/301919-33926-moteriskas-plento-dviratis-triban-easy.html#/demodelsize-200s/demodelcolor-8602202?queryID=497163abab43c35c3aea8f53c7cadd42&objectID=4118519"
-
-html_class = "form-control form-control-select js-select-size js-select2"
 headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.90 Safari/537.36'}
 
-page = requests.get(link, headers=headers)
 
-
-def check():
-    code = page.status_code
-    if code != 200:
-        error_message = 'Something went wrong: page code ' + str(code)
-    else:
-        error_message = ""
-
-def regular_message():
+def create_message(is_avail, avail_dict):
     subject = "Bike Check: "
     if is_avail:
-        subject += 'AVILABLE!!!'
+        subject += 'AVAILABLE!!!'
     else:
         subject += 'Not in Stock.'
     now = datetime.now(tz)
@@ -39,12 +24,11 @@ def regular_message():
         text += line
     return subject, text
 
-def send_message(subject, text):
-    username = 'not.even.denis@gmail.com'
-    #password = keyring.get_password('not.even.denis', username)
-    password = 'mybot2021'
 
-    recipient = 'denisafonin.spb@gmail.com'
+def send_message(subject, text):
+    USERNAME = os.environ['USERNAME']
+    PASSWORD = os.environ['PASSWORD']
+    RECIPIENT = os.environ['RECIPIENT']
 
     # creates SMTP session
     s = smtplib.SMTP('smtp.gmail.com', 587)
@@ -53,66 +37,57 @@ def send_message(subject, text):
     s.starttls()
 
     # Authentication
-    s.login(username, password)
+    s.login(USERNAME, PASSWORD)
 
     # message to be sent
-    headers = "\r\n".join(["from: " + username,
-                           "subject: " + subject,
-                           "to: " + recipient,
-                           "mime-version: 1.0",
-                           "content-type: text/html"])
+    message_info = "\r\n".join(["from: " + USERNAME,
+                                "subject: " + subject,
+                                "to: " + RECIPIENT,
+                                "mime-version: 1.0",
+                                "content-type: text/html"])
 
-    content = headers + "\r\n\r\n" + text
-    s.sendmail(username, recipient, content)
+    content = message_info + "\r\n\r\n" + text
+    s.sendmail(USERNAME, RECIPIENT, content)
     s.quit()
 
-def get_info():
-    global is_avail
-    soup = BeautifulSoup(page.content, "html.parser")
-    lst = list(soup.find("select", id="group_5").find_all('option'))
 
-    for i in lst:
-        if i.get('value') != "":
-            size = i.get("title")
-            avail = 'Not in stock' if i.get("data-stock") == 'disabled' else 'AVAILABLE!'
-            avail_dict[size] = avail
-
-    if "AVAILABLE!" in avail_dict.values():
-        is_avail = True
-
-    if is_avail:
-        s, t = regular_message()
-        send_message(s, t)
-
-# Main logic
-
-while True:
+def availability_check():
     page = requests.get(link, headers=headers)
-
     avail_dict = {}
-    error_message = ""
     is_avail = False
 
     if page.status_code != 200:
         error_message = 'Something went wrong: page code ' + str(page.status_code)
-        send_message('Bike Bot Error', error_message)
-        break
+        send_message('Bike Bot Error:', error_message)
 
     try:
-        get_info()
+        soup = BeautifulSoup(page.content, "html.parser")
+        lst = list(soup.find("select", id="group_5").find_all('option'))
+
+        for i in lst:
+            if i.get('value') != "":
+                size = i.get("title")
+                avail = 'Not in stock' if i.get("data-stock") == 'disabled' else 'AVAILABLE!'
+                avail_dict[size] = avail
+
+        if "AVAILABLE!" in avail_dict.values():
+            is_avail = True
     except:
         error_message = "Something went wrong at get_info stage"
-        send_message('Bike Bot Error', error_message)
-        break
+        send_message('Bike Bot Error:', error_message)
 
-    try:
-        subject, text = regular_message()
-        send_message(subject, text)
-    except:
-        error_message = "Something went wrong at get_info stage"
-        send_message('Bike Bot Error', error_message)
-        break
-
-    sleep(3600)
+    return is_avail, avail_dict
 
 
+def regular_check():
+    is_avail, avail_dict = availability_check()
+    print('Regular check is running')
+    if is_avail:
+        s, t = create_message(is_avail, avail_dict)
+        send_message(s, t)
+
+
+def scheduled_report():
+    is_avail, avail_dict = availability_check()
+    s, t = create_message(is_avail, avail_dict)
+    send_message(s, t)
