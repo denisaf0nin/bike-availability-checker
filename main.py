@@ -4,6 +4,7 @@ from datetime import datetime
 import pytz
 import smtplib
 import os
+import sys
 
 tz = pytz.timezone('Europe/Vilnius')
 
@@ -82,6 +83,7 @@ def availability_check():
 def regular_check():
     is_avail, avail_dict = availability_check()
     print('Regular check is running')
+    sys.stdout.flush()
     if is_avail:
         s, t = create_message(is_avail, avail_dict)
         send_message(s, t)
