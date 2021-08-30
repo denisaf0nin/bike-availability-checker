@@ -1,9 +1,10 @@
 # Bike Stock Availability Checker
 
-I want to get a bike, but apparently there is [a global supply shortage](https://www.cyclist.co.uk/in-depth/9229/wheres-my-bike-the-inside-story-on-the-industry-stock-crisis) due to Covid.
-[The bike that I want](https://www.decathlon.lt/lt/unlinked/312397-66419-gravel-dviratis-120-su-diskiniai-stabdziais.html#/demodelsize-200m/demodelcolor-8575940?queryID=ecec0e2851f6f79ab57e376ac4c6c656&objectID=2962861) is out of stock and local Decathlon website does not allow to subscribe to availablity updates. In this project I am creating an automated availability checker with Python.
+This is an example of an automated availability checker running on Heroku.
 
-What it should do:
+[The item in question](https://www.decathlon.lt/lt/unlinked/312397-66419-gravel-dviratis-120-su-diskiniai-stabdziais.html#/demodelsize-200m/demodelcolor-8575940?queryID=ecec0e2851f6f79ab57e376ac4c6c656&objectID=2962861) is out of stock and the retailer's website does not allow to subscribe to availablity updates.
+
+What should the script do:
 1. Go to website every 15 minutes and check if any frame size is available
 2. If it is, send me an e-mail
 3. If not, send emails at certain hours of the day (just so I know the script is still running)
